@@ -4,7 +4,7 @@ const moment = require('moment');
 const { ObjectId } = mongoose.Schema;
 
 
-const courseSchema = new mongoose.Schema(
+const itemSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -68,12 +68,31 @@ const courseSchema = new mongoose.Schema(
     sold:{
       type: Boolean,
     default: false,
-    },    
-  buyerEmail:"String",
+    },
+
+    buyerEmail:"String",
+
+    billingAddress:{
+      type:String,
+      required:true
+    },
+
+    billingNameUser:{
+      type:String,
+      required:true
+    },
+
+    billingCompleted:{
+      type:Boolean,
+    default:false,
+    },
 
     images: {
         type: Array,
+        required:true
       },
+      purchaseDate:{type:Date},
+      
       comments: [
       {
         text:{type:String,required:true},
@@ -87,4 +106,4 @@ const courseSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("Course", courseSchema);
+export default mongoose.model("Item", itemSchema);

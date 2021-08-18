@@ -37,15 +37,15 @@ const userSchema = new Schema(
       data: String,
       default: "",
     },
-    courses: [{ type: ObjectId, ref: "Course" }],
+    items: [{ type: ObjectId, ref: "Item" }],
     purchases: [
       {
         time:{type:Date},
-        courseId:{type: ObjectId, ref: "Course"},
-        course:{type:Object,ref:"Course"},
+        itemId:{type: ObjectId, ref: "Item"},
+        item:{type:Object,ref:"Item"},
       },
     ],
-    wishlist: [{ type: ObjectId, ref: "Course" }],
+    wishlist: [{ type: ObjectId, ref: "Item" }],
   },
 
   { timestamps: true }

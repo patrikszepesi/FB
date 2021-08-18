@@ -25,7 +25,7 @@ export const register = async (req, res) => {
         .send("Jelszó kötelező és minimum 6 karakterből kell, hogy álljon");
     }
     let userExist = await User.findOne({ email }).exec();
-    if (userExist) return res.status(400).send("Email is taken");
+    if (userExist) return res.status(400).send("Ez az email már foglalt");
 
     // hash password
     const hashedPassword = await hashPassword(password);
@@ -88,7 +88,6 @@ export const logout = async (req, res) => {
 export const currentUser = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select("-password").exec();
-    console.log("CURRENT_USER", user);
     return res.json({ ok: true });
   } catch (err) {
     console.log(err);
@@ -136,7 +135,6 @@ export const forgotPassword = async (req, res) => {
     const emailSent = SES.sendEmail(params).promise();
     emailSent
       .then((data) => {
-        console.log(data);
         res.json({ ok: true });
       })
       .catch((err) => {

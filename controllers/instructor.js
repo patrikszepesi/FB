@@ -1,5 +1,5 @@
 import User from "../models/user";
-import Course from "../models/course";
+import Item from "../models/item";
 import queryString from "query-string";
 const stripe = require("stripe")(process.env.STRIPE_SECRET);
 
@@ -10,6 +10,7 @@ export const makeInstructor = async (req, res) => {
     // 2. if user dont have stripe_account_id yet, then create new
     if (!user.stripe_account_id) {
       const account = await stripe.accounts.create({ type: "express" });
+
       // console.log('ACCOUNT => ', account.id)
       user.stripe_account_id = account.id;
       user.save();
@@ -29,7 +30,7 @@ export const makeInstructor = async (req, res) => {
     // 5. then send the account link as response to fronend
     res.send(`${accountLink.url}?${queryString.stringify(accountLink)}`);
   } catch (err) {
-    console.log("MAKE INSTRUCTOR ERR ", err);
+    console.log("Onboarding seller ERR ", err);
   }
 };
 
@@ -71,29 +72,19 @@ export const currentInstructor = async (req, res) => {
     console.log(err);
   }
 };
-
-export const instructorCourses = async (req, res) => {
-  console.log("mlél")
+//
+export const instructorItems = async (req, res) => {
   try {
-    const courses = await Course.find({ instructor: req.user._id })
+    const items = await Item.find({ instructor: req.user._id, sold:false })
       .sort({ createdAt: -1 })
       .exec();
-    res.json(courses);
+    res.json(items);
   } catch (err) {
     console.log(err);
   }
 };
 
-export const studentCount = async (req, res) => {
-  try {
-    const users = await User.find({ courses: req.body.courseId })
-      .select("_id")
-      .exec();
-    res.json(users);
-  } catch (err) {
-    console.log(err);
-  }
-};
+
 
 export const instructorBalance = async (req, res) => {
   try {

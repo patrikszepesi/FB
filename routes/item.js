@@ -16,14 +16,13 @@ import {
   readWishlist,
   removeFromWishlist,
   update,
-  publishCourse,
-  unpublishCourse,
-  courses,
+  publishItem,
+  unpublishItem,
+  items,
   checkEnrollment,
   paidEnrollment,
   stripeSuccess,
-  userCourses,
-  listCompleted,
+  userItems,
   search,
   invoice,
   getUser,
@@ -31,12 +30,15 @@ import {
   getComments,
   commentAnswers,
   sold,
-  ownerGetData
-} from "../controllers/course";
+  ownerGetData,
+  loadInvoices,
+  completedInvoice,
+  loadAllInvoices
+} from "../controllers/item";
 
 
 
-router.get("/courses", courses);
+router.get("/courses", items);
 // image
 router.post("/course/upload-image", uploadImage);
 router.post("/course/remove-image", removeImage);
@@ -48,17 +50,20 @@ router.get("/course/:slug", read);
 
 
 
-router.put("/course/publish/:courseId", requireSignin, publishCourse);
-router.put("/course/unpublish/:courseId", requireSignin, unpublishCourse);
+router.put("/course/publish/:itemId", requireSignin, publishItem);
+router.put("/course/unpublish/:itemId", requireSignin, unpublishItem);
+
+router.put("/invoice-completed", requireSignin, completedInvoice);
 
 
-router.get("/check-enrollment/:courseId", requireSignin, checkEnrollment);
+
+router.get("/check-enrollment/:itemId", requireSignin, checkEnrollment);
 router.get("/course/invoice/:userId", requireSignin, invoice);
 
 router.post("/paid-enrollment/:itemId", requireSignin, paidEnrollment);
 router.get("/user/:userId", requireSignin, getUser);
 
-router.get("/stripe-success/:courseId", requireSignin, stripeSuccess);
+router.get("/stripe-success/:itemId", requireSignin, stripeSuccess);
 
 router.post("/wishlist/:itemId", requireSignin, addToWishlist);
 router.get("/wishlist", requireSignin, readWishlist);
@@ -76,11 +81,14 @@ router.get("/sold", requireSignin, sold);
 
 
 
-router.get("/user-courses", requireSignin, userCourses);
+router.get("/user-courses", requireSignin, userItems);
+router.get("/load-invocies", requireSignin, loadInvoices);
+router.get("/load-all", requireSignin, loadAllInvoices);
+
+
+
 router.get("/user/course/:slug", requireSignin, read);
 
-// mark completed
-router.post("/list-completed", requireSignin, listCompleted);
 router.post("/search/filters", search);
 
 
