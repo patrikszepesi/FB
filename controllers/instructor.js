@@ -47,6 +47,9 @@ export const getAccountStatus = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).exec();
     const account = await stripe.accounts.retrieve(user.stripe_account_id);
+    if (!account.charges_enabled) {
+      return res.status(401).send("Unauthorized",account.charges_enabled);
+    } 
       const statusUpdated = await User.findByIdAndUpdate(
         user._id,
         {
