@@ -33,7 +33,8 @@ import {
   ownerGetData,
   loadInvoices,
   completedInvoice,
-  loadAllInvoices
+  loadAllInvoices,
+  deleteItem
 } from "../controllers/item";
 
 
@@ -46,6 +47,7 @@ router.post("/course/remove-image", removeImage);
 router.get("/course-owner/:slug", requireSignin,ownerGetData);
 router.post("/course", requireSignin, isInstructor, create);
 router.put("/course/:slug", requireSignin, update);
+router.post("/course-delete/:slug", requireSignin, deleteItem);
 router.get("/course/:slug", read);
 
 

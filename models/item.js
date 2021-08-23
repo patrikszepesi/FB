@@ -92,7 +92,7 @@ const itemSchema = new mongoose.Schema(
         required:true
       },
       purchaseDate:{type:Date},
-      
+
       comments: [
       {
         text:{type:String,required:true},

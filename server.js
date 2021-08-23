@@ -2,7 +2,6 @@ require=require('esm')(module);
 module.exports=require('./index.js');
 
 
-//10.amazon email verify all
 //12.check invocie at stripe
 //13. test payment settings
 //redirect url in stripe??? apparenlty not needed

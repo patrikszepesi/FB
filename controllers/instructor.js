@@ -9,7 +9,16 @@ export const makeInstructor = async (req, res) => {
     const user = await User.findById(req.user._id).exec();
     // 2. if user dont have stripe_account_id yet, then create new
     if (!user.stripe_account_id) {
-      const account = await stripe.accounts.create({ type: "express" });
+      const account = await stripe.accounts.create({
+         type: "express",
+         settings:{
+           payouts:{
+            schedule:{
+              delay_days:25,
+              interval:'daily'
+           }}
+         }
+       });
 
       // console.log('ACCOUNT => ', account.id)
       user.stripe_account_id = account.id;
@@ -38,9 +47,9 @@ export const getAccountStatus = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).exec();
     const account = await stripe.accounts.retrieve(user.stripe_account_id);
-    // console.log("ACCOUNT => ", account);
+     console.log("ACCOUNT => ", account);
     if (!account.charges_enabled) {
-      return res.staus(401).send("Unauthorized");
+      return res.status(401).send("Unauthorized",account.charges_enabled);
     } else {
       const statusUpdated = await User.findByIdAndUpdate(
         user._id,

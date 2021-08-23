@@ -90,12 +90,13 @@ export const removeImage = async (req, res) => {
 };
 
 export const create = async (req, res) => {
+  console.log(req.body)
   // return;
   try {
     const alreadyExist = await Item.findOne({
       slug: slugify(req.body.name.toLowerCase()),
     });
-    if (alreadyExist) return res.status(400).send("Title is taken");
+    if (alreadyExist) return res.status(400).send("Már van ilyen nevű termék");
 
     const item = await new Item({
       slug: slugify(req.body.name),
@@ -179,6 +180,32 @@ export const update = async (req, res) => {
     return res.status(400).send(err.message);
   }
 };
+
+export const deleteItem = async (req, res) => {
+    const { slug } = req.params;
+  const item = await Item.findOne({ _id:slug }).exec();
+  console.log(item.instructor)
+  console.log("booya")
+  console.log(req.user._id)
+  console.log("after")
+  if (req.user._id != item.instructor) {
+    return res.status(400).send("Unauthorized");
+  }
+
+  try {
+
+    // console.log(slug);
+    const item = await Item.deleteOne({ _id:slug }).exec();
+
+
+
+    res.json({ok:true});
+  } catch (err) {
+    console.log(err);
+    return res.status(400).send(err.message);
+  }
+};
+
 
 
 
@@ -271,7 +298,7 @@ export const paidEnrollment = async (req, res) => {
 
     // if (!item.paid) return;
     // application fee 30%
-    const fee = (item.price * 30) / 100;
+    const fee = (item.price * 12.7) / 100;
     // create stripe session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
@@ -358,12 +385,13 @@ export const stripeSuccess = async (req, res) => {
               Data: `
                   <html>
                     <h1>Vásárlás megerősítése</h1>
-                    <p>Az eladó hamarosan kapcsolatba fog lépni veled. Amennyiben ez 3 napon belül nem történik meg, írj nekünk vagy az eladónak</p>
+                    <p>Az eladó hamarosan kapcsolatba fog lépni veled. Amennyiben ez 5 napon belül nem történik meg, írj nekünk vagy az eladónak. A megvétel napjától 20 napig tudunk neked segíteni, ha valami nem megfelelő a vásárolt termékkel.</p>
 
                     <h2>Eladó adatai:</h2>
                     <h4>Email címe :   ${ item.email}</h4>
                     <h4> Telefonszáma : ${ item.phone}</h4>
                     <a href=www.flipit.store>FlipIt</a>
+                    <p></p>
                   </html>
                 `,
             },
@@ -387,7 +415,7 @@ export const stripeSuccess = async (req, res) => {
               Data: `
                   <html>
                     <h1>Valaki megvette az egyik tárgyadat</h1>
-                    <p>A vevő már kifizette a terméket, a pénzt 10 napon belül utaljuk neked, ha sikeresen átvette tőled a vevő a tárgyat</p>
+                    <p>A vevő már kifizette a terméket, a pénzt 25 nap múlva utaljuk neked, ha sikeresen átvette tőled a vevő a tárgyat.</p>
                     <p>Befolyt összeg megtekíntése <a href=www.flipit.store/seller/revenue>www.flipit.store/seller/revenue</a> </p>
 
                     <p>Tárgy amit megvettek tőled: ${item.name}</p>
@@ -395,6 +423,7 @@ export const stripeSuccess = async (req, res) => {
                     <p>Írj vissza a vevőnek minél előbb, hogy a tárgyat hol és mikor tudja átvenni</p>
                     <p>Vevő email címe: ${session.customer_details.email}</p>
                     <p>Az eladásról készült számlát 8 napon belül küldjük erre az email címre</p>
+                    <p>Javasoljuk minden eladónak, hogy az eladott termék átadásakor írasson alá egy átadási-átvételi papírt a vevővel. Átadás-átvételi nyilatkozat letölthető innen: https://www.flipit.store/downloads</p>
 
                     <h6>FlipIt</h6>
                   </html>
